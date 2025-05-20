@@ -211,12 +211,7 @@ class TrueNASCoordinator(DataUpdateCoordinator[None]):
                 self.ds["system_info"]["update_jobid"] = 0
                 self.ds["system_info"]["update_state"] = "unknown"
 
-        self._is_scale = bool(
-            self.ds["system_info"]["version"].startswith("TrueNAS-SCALE-")
-        )
-
-        if not self._is_scale and "TrueNAS" not in self.ds["system_info"]["version"]:
-            self._is_scale = True
+        self._is_scale = True
 
         if self._is_scale:
             if not self._version_major:
@@ -224,7 +219,6 @@ class TrueNASCoordinator(DataUpdateCoordinator[None]):
                     self.ds["system_info"]
                     .get("version")
                     .removeprefix("TrueNAS-")
-                    .removeprefix("SCALE-")
                     .split(".")[0]
                 )
 
@@ -233,7 +227,6 @@ class TrueNASCoordinator(DataUpdateCoordinator[None]):
                     self.ds["system_info"]
                     .get("version")
                     .removeprefix("TrueNAS-")
-                    .removeprefix("SCALE-")
                     .split(".")[1]
                 )
 
@@ -515,9 +508,8 @@ class TrueNASCoordinator(DataUpdateCoordinator[None]):
             if tmp_graph[i]["name"] == "cpu":
                 tmp_arr = ("interrupt", "system", "user", "nice", "idle")
                 if (
-                    self._is_scale
-                    and self._version_major >= 23
-                    and self._version_major <= 24
+                        self._is_scale
+                        and 23 <= self._version_major <= 24
                 ):
                     tmp_arr = ("softirq", "system", "user", "nice", "iowait", "idle")
                 elif self._is_scale and self._version_major >= 25:
@@ -648,9 +640,8 @@ class TrueNASCoordinator(DataUpdateCoordinator[None]):
                     tmp_val = graph["aggregations"]["mean"][e] or 0.0
                     if t == "memory":
                         if (
-                            self._is_scale
-                            and self._version_major >= 23
-                            and self._version_major <= 24
+                                self._is_scale
+                                and 23 <= self._version_major <= 24
                         ):
                             if tmp_var == "free":
                                 self.ds["system_info"]["memory-free_value"] = round(

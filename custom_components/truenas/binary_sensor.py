@@ -55,6 +55,7 @@ class TrueNASBinarySensor(TrueNASEntity, BinarySensorEntity):
                 return self.entity_description.icon_enabled
             else:
                 return self.entity_description.icon_disabled
+        return None
 
 
 # ---------------------------
